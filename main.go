@@ -29,7 +29,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	album, err := albumByID(1)
+	album, err := addAlbum(Album{
+		Title:  "Jahji",
+		Artist: "Shironamhin",
+		Price:  120,
+	})
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,4 +83,16 @@ func albumByID(id int64) (Album, error) {
 		return alb, fmt.Errorf("albumsById %d: %v", id, err)
 	}
 	return alb, nil
+}
+
+func addAlbum(alb Album) (int64, error) {
+	result, err := db.Exec("INSERT INTO album (title, artist, price) VALUES (?, ?, ?)", alb.Title, alb.Artist, alb.Price)
+	if err != nil {
+		return 0, fmt.Errorf("addAlbum: %v", err)
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("addAlbum: %v", err)
+	}
+	return id, nil
 }
